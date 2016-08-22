@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>放大镜</title>
+</head>
+<style>
+	*{
+		margin:0;
+		padding:0;
+	}
+	#main{
+		margin:20px;
+	}
+	.small{
+		position: relative;
+		display: inline-block;
+		width:200px;
+		height:200px;
+	}
+	.small img{
+		width:200px;
+		height:200px;
+		z-index:1;
+	}
+	.mask{
+		display: none;
+		width:111px;
+		height:111px;
+		
+		z-index:2;
+		position:absolute;
+		top:0;
+		left:0;
+		background-color:white;
+		filter:alpha(opacity:0.5); 
+		opacity:0.5; 
+	}
+	.big{
+		width:250px;
+		height:250px;
+		overflow:hidden;
+		position: relative;
+		top:-200px;
+		left:250px;
+		border:1px solid black;
+		display: none;
+	}
+	.big img{
+		position: absolute;
+		top:0;
+		left:0;
+	}
+</style>
+<script src="jquery-3.1.0.js"></script>
+<script>
+$(function(){
+	$('.small').on('mouseover',function(e){
+		var e=e || event;
+		var iLeft=e.clientX-$('.small')[0].offsetLeft;
+		var iTop=e.clientY-$('.small')[0].offsetTop;
+
+		$('.mask').css('display','block');
+		$('.big').css('display','block')
+		
+
+		$('.mask').css('left',iLeft).css('top',iTop);
+	})
+	$('.small').on('mouseout',function(e){
+		$('.mask').css('display','none');
+		$('.big').css('display','none')
+	})
+	$('.small').on('mousemove',function(e){
+
+		var e=e || event;
+		var iLeft=e.clientX-$('.small')[0].offsetLeft-$('.mask').outerWidth()/2;
+		var iTop=e.clientY-$('.small')[0].offsetTop-$('.mask').outerHeight()/2;
+		if(iLeft<0){
+			iLeft=0;
+		}
+		if(iTop<0){
+			iTop=0;
+		}
+		if(iTop>$('.small').outerHeight()-$('.mask').outerHeight()){
+			iTop=$('.small').outerHeight()-$('.mask').outerHeight()
+		}
+		if(iLeft>$('.small').outerWidth()-$('.mask').outerWidth()){
+			iLeft=$('.small').outerWidth()-$('.mask').outerWidth();
+		}
+		$('.mask').css('left',iLeft).css('top',iTop);
+		var scaleX=iLeft/($('.small').outerWidth()-$('.mask').outerWidth());
+		var scaleY=iTop/($('.small').outerWidth()-$('.mask').outerHeight());
+		
+		var bigImg=$('.big img');
+		
+		var bigLeft=-(bigImg.outerWidth()-$('.big').outerWidth())*scaleX;
+		var bigTop=-(bigImg.outerHeight()-$('.big').outerHeight())*scaleY;
+		bigImg.css('left',bigLeft).css('top',bigTop);
+
+	})
+})
+
+</script>
+<body>
+	<div id="main">
+		<div class="small">
+			<span class="mask"></span>
+			<img src="images/small.png" alt="">
+		</div>
+	
+		<div class="big">
+			<img src="images/big.png" alt="">
+		</div>
+		
+	</div>
+</body>
+</html>
